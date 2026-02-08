@@ -1,0 +1,19 @@
+{
+  "name": "click-race-game",
+  "version": "1.0.0",
+  "description": "Real-time multiplayer click race game with AWS serverless backend",
+  "main": "backend/functions/game.js",
+  "scripts": {
+    "deploy": "sam build && sam deploy --guided",
+    "deploy:ci": "sam build && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset",
+    "local": "sam local start-api",
+    "build": "sam build",
+    "sync": "sam sync --stack-name click-race-game --watch"
+  },
+  "keywords": ["aws", "serverless", "websocket", "multiplayer", "game"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1499.0"
+  }
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Race - Multiplayer Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-click {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 32px;
+            padding: 60px;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .btn-click:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-click:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.playing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .leaderboard {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .leaderboard h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .score-list {
+            list-style: none;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 16px;
+        }
+        
+        .score-item:last-child {
+            border-bottom: none;
+        }
+        
+        .score-item.current-player {
+            background: #e3f2fd;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        
+        .score-item .rank {
+            width: 30px;
+            text-align: center;
+        }
+        
+        .score-item .name {
+            flex: 1;
+            padding: 0 10px;
+        }
+        
+        .score-item .clicks {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .players-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .player-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .timer {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: #f5576c;
+            margin: 20px 0;
+        }
+        
+        .click-count {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        
+        .click-count .number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .winner-announcement {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .winner-announcement h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .connection-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Click Race</h1>
+        <p class="subtitle">Real-time Multiplayer Competition</p>
+        
+        <!-- Connection Status -->
+        <div id="status" class="status connecting">Connecting to server...</div>
+        
+        <!-- Join Section -->
+        <div id="joinSection" class="section active">
+            <div class="instructions">
+                <strong>How to play:</strong>
+                <ul style="margin: 10px 0 0 20px;">
+                    <li>Enter your name and a room ID</li>
+                    <li>Share the room ID with friends</li>
+                    <li>Click the button as fast as you can!</li>
+                    <li>Highest score in 30 seconds wins!</li>
+                </ul>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerName">Your Name</label>
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+            </div>
+            
+            <div class="form-group">
+                <label for="roomId">Room ID</label>
+                <input type="text" id="roomId" placeholder="Enter room ID (e.g., room123)" maxlength="30">
+            </div>
+            
+            <button id="joinBtn" class="btn-primary" disabled>Join Game</button>
+        </div>
+        
+        <!-- Game Section -->
+        <div id="gameSection" class="section">
+            <div id="gameStatus" class="status">Waiting for players...</div>
+            
+            <div class="players-list" id="playersList"></div>
+            
+            <div class="timer" id="timer">30</div>
+            
+            <div class="click-count">
+                Your clicks: <span class="number" id="clickCount">0</span>
+            </div>
+            
+            <button id="clickBtn" class="btn-click" disabled>CLICK!</button>
+            
+            <div class="leaderboard">
+                <h3>🏆 Live Leaderboard</h3>
+                <ul id="leaderboardList" class="score-list">
+                    <li class="score-item">
+                        <span class="rank">-</span>
+                        <span class="name">Waiting for players...</span>
+                        <span class="clicks">-</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <button id="playAgainBtn" class="btn-primary" style="margin-top: 20px; display: none;">
+                Play Again
+            </button>
+        </div>
+        
+        <!-- Winner Section -->
+        <div id="winnerSection" class="section">
+            <div class="winner-announcement">
+                <h2>🎉 Game Over!</h2>
+                <p id="winnerText"></p>
+            </div>
+            
+            <div class="leaderboard">
+                <h3>Final Results</h3>
+                <ul id="finalLeaderboard" class="score-list"></ul>
+            </div>
+            
+            <button id="newGameBtn" class="btn-primary" style="margin-top: 20px;">
+                Play Again
+            </button>
+        </div>
+    </div>
+    
+    <div class="connection-info" id="connectionInfo">Disconnected</div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
